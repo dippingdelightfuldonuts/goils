@@ -1,0 +1,31 @@
+
+-- +goose Up
+-- +goose StatementBegin
+{{- $TableName := .TableName}}
+CREATE TABLE IF NOT EXISTS {{ $TableName }}
+(
+{{- $size := len .Attributes }}
+{{- range $index, $element := .Attributes }}
+	{{ $element.ToTemplate }}{{if lt $index (add $size -1) }},{{ end }}
+{{- end }}
+)
+WITH
+(
+    OIDS=FALSE
+);
+{{- range $index, $element := .Indexes }}
+CREATE INDEX IF NOT EXISTS {{ $element.Name }}
+	ON {{ $TableName }}
+	USING {{ .Type }}
+({{ $element.SqlIndex }});
+{{- end }}
+{{- if .Owner }}
+ALTER TABLE {{ $TableName }}
+	OWNER TO "{{ .Owner }}";
+{{- end }}
+-- +goose StatementEnd
+
+-- +goose Down
+-- +goose StatementBegin
+DROP TABLE {{ $TableName }};
+-- +goose StatmentEnd

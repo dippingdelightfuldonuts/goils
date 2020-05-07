@@ -1,0 +1,11 @@
+syntax="proto3";
+
+package ;
+
+{{- range $index, $element := .CrudMessages}}
+message {{ .Name }} {
+{{- range $index, $element := .Attributes }}
+  {{ $element.ToProto }} = {{ add $index 1 }};
+{{- end }}
+}
+{{- end }}
