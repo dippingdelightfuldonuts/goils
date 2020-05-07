@@ -4,120 +4,11 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"strings"
 	"text/template"
 
 	"github.com/iancoleman/strcase"
+	"weavelab.xyz/goils/resources"
 )
-
-type AttributeType string
-
-func (a AttributeType) ToProto() string {
-	switch a {
-	case "UUID":
-		return "shared.UUID"
-	}
-	return ""
-}
-
-type Attribute struct {
-	Name     string
-	Type     AttributeType
-	Nullable bool
-}
-
-func (a Attribute) ToTemplate() string {
-	nullableStr := ""
-	if !a.Nullable {
-		nullableStr = " NOT NULL"
-	}
-
-	return fmt.Sprintf("%s %s%s", a.Name, a.Type, nullableStr)
-}
-
-func (a Attribute) ToProto() string {
-	return fmt.Sprintf("%s %s", a.Type.ToProto(), strings.ReplaceAll(strcase.ToCamel(a.Name), "id", "ID"))
-}
-
-type Index struct {
-	Name    string
-	Type    string // (i.e. BTREE)
-	Columns []string
-}
-
-func (i Index) SqlIndex() string {
-	return strings.Join(i.Columns, ", ")
-}
-
-func (i Index) HasAttribute(attribute string) bool {
-	for _, column := range i.Columns {
-		if column == attribute {
-			return true
-		}
-	}
-
-	return false
-}
-
-type CreateTable struct {
-	TableName  string
-	Attributes []Attribute
-	Indexes    []Index
-	Owner      string
-}
-
-type CrudOption string
-
-func (c CrudOption) MessageName() string {
-	switch c {
-	case "show":
-		return string(c)
-	}
-
-	return ""
-}
-
-type Resource struct {
-	CreateTable
-	CrudOptions []CrudOption
-}
-
-type ProtoMessage struct {
-	Name       string
-	Type       string
-	Attributes []Attribute
-}
-
-func newProtoMessage(resource Resource, name string, typ string) ProtoMessage {
-	pm := ProtoMessage{
-		Type: typ,
-	}
-
-	switch typ {
-	case "show":
-		var indexed []Attribute
-		for _, attr := range resource.Attributes {
-			for _, index := range resource.Indexes {
-				fmt.Println("attr:", attr, "index:", index)
-				if index.HasAttribute(attr.Name) {
-					indexed = append(indexed, attr)
-				}
-			}
-		}
-		pm.Name = resource.TableName // todo: maybe expand string so titleize, downcase, etc accessible
-		pm.Attributes = indexed
-	}
-	return pm
-}
-
-func (r Resource) CrudMessages() []ProtoMessage {
-	messages := make([]ProtoMessage, len(r.CrudOptions))
-	for i, msg := range r.CrudOptions {
-		messages[i] = newProtoMessage(r, string(msg), msg.MessageName())
-	}
-
-	return messages
-}
 
 func AllFunctions() template.FuncMap {
 	return template.FuncMap{
@@ -145,9 +36,9 @@ func main() {
 		return
 	}
 
-	table := CreateTable{
+	table := resources.CreateTable{
 		TableName: "Bob",
-		Attributes: []Attribute{
+		Attributes: []resources.Attribute{
 			{
 				Name:     "id",
 				Type:     "UUID",
@@ -159,7 +50,7 @@ func main() {
 				Nullable: false,
 			},
 		},
-		Indexes: []Index{
+		Indexes: []resources.Index{
 			{
 				Name:    "idx_appt_type_location_id",
 				Type:    "BTREE",
@@ -176,9 +67,9 @@ func main() {
 		fmt.Println("err:", err)
 	}
 
-	resource := Resource{
+	resource := resources.Resource{
 		CreateTable: table,
-		CrudOptions: []CrudOption{"show"},
+		CrudOptions: []resources.CrudOption{"show"},
 	}
 
 	protoTemplate := template.Must(
