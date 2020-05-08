@@ -17,6 +17,15 @@ func (a AttributeType) ToProto() string {
 	return ""
 }
 
+func (a AttributeType) ToSQL() string {
+	switch a {
+	case "string":
+		return "varchar(120)"
+	default:
+		return string(a)
+	}
+}
+
 type Attribute struct {
 	Name     string
 	Type     AttributeType
@@ -29,7 +38,7 @@ func (a Attribute) ToTemplate() string {
 		nullableStr = " NOT NULL"
 	}
 
-	return fmt.Sprintf("%s %s%s", a.Name, a.Type, nullableStr)
+	return fmt.Sprintf("%s %s%s", a.Name, a.Type.ToSQL(), nullableStr)
 }
 
 func (a Attribute) ToProto() string {

@@ -1,0 +1,19 @@
+-- +goose Up
+-- +goose StatementBegin
+CREATE TABLE IF NOT EXISTS sms
+(
+	id UUID NOT NULL,
+	text varchar(120) NOT NULL,
+	created_at date NOT NULL,
+	auto boolean NOT NULL
+)
+WITH
+(
+	OIDS=FALSE
+);
+-- +goose StatementEnd
+
+-- +goose Down
+-- +goose StatementBegin
+DROP TABLE sms;
+-- +goose StatmentEnd
