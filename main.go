@@ -37,7 +37,7 @@ func main() {
 	}
 
 	table := resources.CreateTable{
-		TableName: "Bob",
+		TableName: "setting",
 		Attributes: []resources.Attribute{
 			{
 				Name:     "id",
