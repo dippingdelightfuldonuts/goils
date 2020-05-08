@@ -85,7 +85,7 @@ type ProtoMessage struct {
 	Attributes []Attribute
 }
 
-func newProtoMessage(resource Resource, name string, typ string) ProtoMessage {
+func newProtoMessage(resource Resource, typ string) ProtoMessage {
 	pm := ProtoMessage{
 		Type: typ,
 	}
@@ -101,11 +101,18 @@ func newProtoMessage(resource Resource, name string, typ string) ProtoMessage {
 				}
 			}
 		}
-		pm.Name = resource.TableName // todo: maybe expand string so titleize, downcase, etc accessible
+		pm.Name = strcase.ToCamel(resource.TableName) // todo: maybe expand string so titleize, downcase, etc accessible
 		pm.Attributes = indexed
 	case "index":
-		pm.Name = resource.TableName
-		pm.Attributes = []Attribute{}
+		var suitable []Attribute
+		for _, attr := range resource.Attributes {
+			if attr.Name == "id" {
+				continue
+			}
+			suitable = append(suitable, attr)
+		}
+		pm.Name = "List" + strcase.ToCamel(resource.TableName)
+		pm.Attributes = suitable
 	}
 	return pm
 }
@@ -113,7 +120,7 @@ func newProtoMessage(resource Resource, name string, typ string) ProtoMessage {
 func (r Resource) CrudMessages() []ProtoMessage {
 	messages := make([]ProtoMessage, len(r.CrudOptions))
 	for i, msg := range r.CrudOptions {
-		messages[i] = newProtoMessage(r, string(msg), msg.MessageName())
+		messages[i] = newProtoMessage(r, msg.MessageName())
 	}
 
 	return messages

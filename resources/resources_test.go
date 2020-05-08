@@ -8,7 +8,7 @@ import (
 
 func Test_newProtoMessage(t *testing.T) {
 	table := CreateTable{
-		TableName: "Bob",
+		TableName: "setting",
 		Attributes: []Attribute{
 			{
 				Name:     "id",
@@ -18,6 +18,11 @@ func Test_newProtoMessage(t *testing.T) {
 			{
 				Name:     "locationid",
 				Type:     "UUID",
+				Nullable: false,
+			},
+			{
+				Name:     "name",
+				Type:     "string",
 				Nullable: false,
 			},
 		},
@@ -33,7 +38,6 @@ func Test_newProtoMessage(t *testing.T) {
 
 	type args struct {
 		resource Resource
-		name     string
 		typ      string
 	}
 	tests := []struct {
@@ -42,17 +46,16 @@ func Test_newProtoMessage(t *testing.T) {
 		want ProtoMessage
 	}{
 		{
-			name: "",
+			name: "given 'show' creates suitable ProtoMessage",
 			args: args{
 				resource: Resource{
 					CreateTable: table,
 					CrudOptions: []CrudOption{"show"},
 				},
-				name: "schedule_requests",
-				typ:  "show",
+				typ: "show",
 			},
 			want: ProtoMessage{
-				Name: "Bob",
+				Name: "Setting",
 				Type: "show",
 				Attributes: []Attribute{
 					{
@@ -68,11 +71,37 @@ func Test_newProtoMessage(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "given 'index' creates suitable ProtoMessage",
+			args: args{
+				resource: Resource{
+					CreateTable: table,
+					CrudOptions: []CrudOption{"show"},
+				},
+				typ: "index",
+			},
+			want: ProtoMessage{
+				Name: "ListSetting",
+				Type: "index",
+				Attributes: []Attribute{
+					{
+						Name:     "locationid",
+						Type:     "UUID",
+						Nullable: false,
+					},
+					{
+						Name:     "name",
+						Type:     "string",
+						Nullable: false,
+					},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			Convey("expected tests", t, func() {
-				got := newProtoMessage(tt.args.resource, tt.args.name, tt.args.typ)
+			Convey("newProtoMessage", t, func() {
+				got := newProtoMessage(tt.args.resource, tt.args.typ)
 				So(got, ShouldResemble, tt.want)
 			})
 		})
