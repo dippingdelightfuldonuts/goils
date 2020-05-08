@@ -24,12 +24,6 @@ func AllFunctions() template.FuncMap {
 func main() {
 	fmt.Println("Hello, and welcome to Goils")
 
-	data, err := ioutil.ReadFile("templates/database/create_table.sql.tmpl")
-	if err != nil {
-		fmt.Println("err:", err)
-		return
-	}
-
 	protoTemp, err := ioutil.ReadFile("templates/grpc/message.proto.tmpl")
 	if err != nil {
 		fmt.Println("err:", err)
@@ -59,18 +53,17 @@ func main() {
 		},
 		Owner: "schedule",
 	}
-	t := template.Must(
-		template.New("letter").Funcs(AllFunctions()).Parse(string(data)),
-	)
-	err = t.Execute(os.Stdout, table)
-	if err != nil {
-		fmt.Println("err:", err)
-	}
 
 	resource := resources.Resource{
 		CreateTable: table,
 		CrudOptions: []resources.CrudOption{"show"},
 	}
+
+	res, err := resources.GenerateMigration(resource)
+	if err != nil {
+		fmt.Println("err:", err)
+	}
+	fmt.Println(res)
 
 	protoTemplate := template.Must(
 		template.New("proto").Funcs(AllFunctions()).Parse(string(protoTemp)),
