@@ -42,6 +42,8 @@ type Index struct {
 	Columns []string
 }
 
+type Indexes []Index
+
 func (i Index) SqlIndex() string {
 	return strings.Join(i.Columns, ", ")
 }
@@ -56,11 +58,44 @@ func (i Index) HasAttribute(attribute string) bool {
 	return false
 }
 
+func (i Indexes) Any(f func(i Index) bool) bool {
+	for _, index := range i {
+		if f(index) {
+			return true
+		}
+	}
+
+	return false
+}
+
+type Attributes []Attribute
+
 type CreateTable struct {
 	TableName  string
-	Attributes []Attribute
-	Indexes    []Index
+	Attributes Attributes
+	Indexes    Indexes
 	Owner      string
+}
+
+func (a Attributes) Any(f func(a Attribute) bool) bool {
+	for _, attribute := range a {
+		if f(attribute) {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (a Attributes) Select(f func(a Attribute) bool) []Attribute {
+	attrs := make([]Attribute, 0)
+	for _, attribute := range a {
+		if f(attribute) {
+			attrs = append(attrs, attribute)
+		}
+	}
+
+	return attrs
 }
 
 type CrudOption string
@@ -100,13 +135,9 @@ func newProtoMessage(resource Resource, typ string) ProtoMessage {
 }
 
 func newIndexProtoMessage(resource Resource) ProtoMessage {
-	var suitable []Attribute
-	for _, attr := range resource.Attributes {
-		if attr.Name == "id" {
-			continue
-		}
-		suitable = append(suitable, attr)
-	}
+	suitable := resource.Attributes.Select(func(attr Attribute) bool {
+		return attr.Name != "id"
+	})
 
 	return ProtoMessage{
 		Type:       "index",
@@ -116,14 +147,11 @@ func newIndexProtoMessage(resource Resource) ProtoMessage {
 }
 
 func newShowProtoMessage(resource Resource) ProtoMessage {
-	var indexed []Attribute
-	for _, attr := range resource.Attributes {
-		for _, index := range resource.Indexes {
-			if index.HasAttribute(attr.Name) {
-				indexed = append(indexed, attr)
-			}
-		}
-	}
+	indexed := resource.Attributes.Select(func(attr Attribute) bool {
+		return resource.Indexes.Any(func(index Index) bool {
+			return index.HasAttribute(attr.Name)
+		})
+	})
 
 	return ProtoMessage{
 		Type:       "show",
