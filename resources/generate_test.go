@@ -60,3 +60,61 @@ func Test_GenerateMigration(t *testing.T) {
 		})
 	}
 }
+
+func Test_GenerateProto(t *testing.T) {
+	type args struct {
+		resource Resource
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    string
+		wantErr bool
+	}{
+		{
+			name: "should generate template given resource",
+			args: args{
+				resource: Resource{
+					CreateTable: CreateTable{
+						TableName: "sms",
+						Attributes: Attributes{
+							{
+								Name:     "id",
+								Type:     "UUID",
+								Nullable: false,
+							},
+							{
+								Name:     "text",
+								Type:     "string",
+								Nullable: false,
+							},
+							{
+								Name:     "created_at",
+								Type:     "date",
+								Nullable: false,
+							},
+							{
+								Name:     "auto",
+								Type:     "boolean",
+								Nullable: false,
+							},
+						},
+					},
+					CrudOptions: []CrudOption{
+						"show",
+					},
+				},
+			},
+			want: goldenFile("generateproto"),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			Convey("generateProto", t, func() {
+				got, err := GenerateProto(tt.args.resource)
+				So(err != nil, ShouldEqual, tt.wantErr)
+				So(got, ShouldResemble, tt.want)
+			})
+		})
+	}
+}

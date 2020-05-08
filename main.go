@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
-	"os"
+	"path/filepath"
 	"text/template"
 
 	"github.com/iancoleman/strcase"
@@ -23,12 +23,6 @@ func AllFunctions() template.FuncMap {
 
 func main() {
 	fmt.Println("Hello, and welcome to Goils")
-
-	protoTemp, err := ioutil.ReadFile("templates/grpc/message.proto.tmpl")
-	if err != nil {
-		fmt.Println("err:", err)
-		return
-	}
 
 	table := resources.CreateTable{
 		TableName: "setting",
@@ -63,13 +57,12 @@ func main() {
 	if err != nil {
 		fmt.Println("err:", err)
 	}
-	fmt.Println(res)
 
-	protoTemplate := template.Must(
-		template.New("proto").Funcs(AllFunctions()).Parse(string(protoTemp)),
-	)
-	err = protoTemplate.Execute(os.Stdout, resource)
+	err = ioutil.WriteFile(filepath.Join("output", "migration.sql"), []byte(res), 0644)
 	if err != nil {
 		fmt.Println("err:", err)
 	}
+
+	res, err = resources.GenerateProto(resource)
+	fmt.Println("res: ", res)
 }
