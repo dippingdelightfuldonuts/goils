@@ -92,29 +92,44 @@ func newProtoMessage(resource Resource, typ string) ProtoMessage {
 
 	switch typ {
 	case "show":
-		var indexed []Attribute
-		for _, attr := range resource.Attributes {
-			for _, index := range resource.Indexes {
-				fmt.Println("attr:", attr, "index:", index)
-				if index.HasAttribute(attr.Name) {
-					indexed = append(indexed, attr)
-				}
-			}
-		}
-		pm.Name = strcase.ToCamel(resource.TableName) // todo: maybe expand string so titleize, downcase, etc accessible
-		pm.Attributes = indexed
+		return newShowProtoMessage(resource)
 	case "index":
-		var suitable []Attribute
-		for _, attr := range resource.Attributes {
-			if attr.Name == "id" {
-				continue
-			}
-			suitable = append(suitable, attr)
-		}
-		pm.Name = "List" + strcase.ToCamel(resource.TableName)
-		pm.Attributes = suitable
+		return newIndexProtoMessage(resource)
 	}
 	return pm
+}
+
+func newIndexProtoMessage(resource Resource) ProtoMessage {
+	var suitable []Attribute
+	for _, attr := range resource.Attributes {
+		if attr.Name == "id" {
+			continue
+		}
+		suitable = append(suitable, attr)
+	}
+
+	return ProtoMessage{
+		Type:       "index",
+		Name:       "List" + strcase.ToCamel(resource.TableName),
+		Attributes: suitable,
+	}
+}
+
+func newShowProtoMessage(resource Resource) ProtoMessage {
+	var indexed []Attribute
+	for _, attr := range resource.Attributes {
+		for _, index := range resource.Indexes {
+			if index.HasAttribute(attr.Name) {
+				indexed = append(indexed, attr)
+			}
+		}
+	}
+
+	return ProtoMessage{
+		Type:       "show",
+		Name:       strcase.ToCamel(resource.TableName),
+		Attributes: indexed,
+	}
 }
 
 func (r Resource) CrudMessages() []ProtoMessage {
