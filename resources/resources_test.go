@@ -1,7 +1,6 @@
 package resources
 
 import (
-	"reflect"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -73,9 +72,8 @@ func Test_newProtoMessage(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			Convey("expected tests", t, func() {
-				if got := newProtoMessage(tt.args.resource, tt.args.name, tt.args.typ); !reflect.DeepEqual(got, tt.want) {
-					t.Errorf("newProtoMessage() = %v, want %v", got, tt.want)
-				}
+				got := newProtoMessage(tt.args.resource, tt.args.name, tt.args.typ)
+				So(got, ShouldResemble, tt.want)
 			})
 		})
 	}
