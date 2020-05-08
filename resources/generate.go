@@ -24,13 +24,16 @@ func templateFunctions() template.FuncMap {
 	}
 }
 
-func generateMigration(resource Resource) (string, error) {
+func GenerateMigration(resource Resource) (string, error) {
 	s := ""
 	buffer := bytes.NewBufferString(s)
 
-	temp, err := ioutil.ReadFile(filepath.Join("..", createTableTemplate))
+	temp, err := ioutil.ReadFile(filepath.Join(createTableTemplate))
 	if err != nil {
-		return "", err
+		temp, err = ioutil.ReadFile(filepath.Join("..", createTableTemplate))
+		if err != nil {
+			return "", err
+		}
 	}
 
 	t := template.Must(

@@ -6,7 +6,7 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-func Test_generateMigration(t *testing.T) {
+func Test_GenerateMigration(t *testing.T) {
 	type args struct {
 		resource Resource
 	}
@@ -53,7 +53,7 @@ func Test_generateMigration(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			Convey("generateMigration", t, func() {
-				got, err := generateMigration(tt.args.resource)
+				got, err := GenerateMigration(tt.args.resource)
 				So(err != nil, ShouldEqual, tt.wantErr)
 				So(got, ShouldResemble, tt.want)
 			})
