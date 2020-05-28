@@ -65,4 +65,7 @@ func main() {
 
 	res, err = resources.GenerateProto(resource)
 	fmt.Println("res: ", res)
+
+	res, err = resources.GenerateSQL(resource)
+	fmt.Println("sql: ", res)
 }

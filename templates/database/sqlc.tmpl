@@ -1,0 +1,26 @@
+{{- $TableName := .TableName}}
+{{- $numCrud := len .CrudMessages }}
+{{- range $index, $element := .CrudMessages}}
+{{ if eq $element.Type "show" }}
+-- name: Get{{camelcase $element.Name}} :one
+SELECT * FROM {{$TableName}}
+WHERE ID = $1 LIMIT 1;
+{{- end }}
+{{- if eq $element.Type "index" }}
+-- name: List{{camelcase $element.Name }} :many
+SELECT * FROM {{$TableName}};
+{{- end }}
+{{- if eq $element.Type "create" }}
+-- name: Create{{camelcase $element.Name }} : one
+INSERT INTO {{$TableName}} (
+{{- $size := len .Attributes }}
+{{- range $index, $attr := .Attributes }}
+    {{ $attr.Name }}{{if lt $index (add $size -1) }},{{ end }}
+{{- end }}
+) VALUES (
+{{- range $index, $attr := .Attributes }}
+    ${{ add $index 1}}{{if lt $index (add $size -1) }},{{ end }}
+{{- end }}
+);
+{{- end }}
+{{- end }}

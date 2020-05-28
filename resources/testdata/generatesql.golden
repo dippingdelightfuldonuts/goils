@@ -1,0 +1,19 @@
+
+
+-- name: GetSms :one
+SELECT * FROM sms
+WHERE ID = $1 LIMIT 1;
+
+-- name: ListListSms :many
+SELECT * FROM sms;
+
+-- name: CreateCreateSms : one
+INSERT INTO sms (
+    text,
+    created_at,
+    auto
+) VALUES (
+    $1,
+    $2,
+    $3
+);

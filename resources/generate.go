@@ -12,6 +12,7 @@ import (
 const (
 	createTableTemplate = "templates/database/create_table.sql.tmpl"
 	grpcMessageTemplate = "templates/grpc/message.proto.tmpl"
+	sqlTemplate         = "templates/database/sqlc.tmpl"
 )
 
 func templateFunctions() template.FuncMap {
@@ -62,6 +63,29 @@ func GenerateProto(resource Resource) (string, error) {
 
 	t := template.Must(
 		template.New("proto").Funcs(templateFunctions()).Parse(string(temp)),
+	)
+	err = t.Execute(buffer, resource)
+	if err != nil {
+		return "", err
+	}
+
+	return buffer.String(), nil
+}
+
+func GenerateSQL(resource Resource) (string, error) {
+	s := ""
+	buffer := bytes.NewBufferString(s)
+
+	temp, err := ioutil.ReadFile(filepath.Join(sqlTemplate))
+	if err != nil {
+		temp, err = ioutil.ReadFile(filepath.Join("..", sqlTemplate))
+		if err != nil {
+			return "", err
+		}
+	}
+
+	t := template.Must(
+		template.New("sqlTemplate").Funcs(templateFunctions()).Parse(string(temp)),
 	)
 	err = t.Execute(buffer, resource)
 	if err != nil {

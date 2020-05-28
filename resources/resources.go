@@ -111,7 +111,7 @@ type CrudOption string
 
 func (c CrudOption) MessageName() string {
 	switch c {
-	case "show":
+	case "show", "index", "create":
 		return string(c)
 	}
 
@@ -139,6 +139,8 @@ func newProtoMessage(resource Resource, typ string) ProtoMessage {
 		return newShowProtoMessage(resource)
 	case "index":
 		return newIndexProtoMessage(resource)
+	case "create":
+		return newCreateProtoMessage(resource)
 	}
 	return pm
 }
@@ -166,6 +168,19 @@ func newShowProtoMessage(resource Resource) ProtoMessage {
 		Type:       "show",
 		Name:       strcase.ToCamel(resource.TableName),
 		Attributes: indexed,
+	}
+}
+
+func newCreateProtoMessage(resource Resource) ProtoMessage {
+	// might need to handle indexes differently
+	suitable := resource.Attributes.Select(func(attr Attribute) bool {
+		return attr.Name != "id"
+	})
+
+	return ProtoMessage{
+		Type:       "create",
+		Name:       "Create" + strcase.ToCamel(resource.TableName),
+		Attributes: suitable,
 	}
 }
 
