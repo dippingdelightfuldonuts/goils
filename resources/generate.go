@@ -15,6 +15,7 @@ const (
 	grpcMessageTemplate = "templates/grpc/message.proto.tmpl"
 	sqlTemplate         = "templates/database/sqlc.tmpl"
 	sqlYamlTemplate     = "templates/database/sqlc.yaml.tmpl"
+	sqlSchemeTemplate   = "templates/database/sqlc.schema.tmpl"
 
 	directory = "output"
 )
@@ -133,11 +134,13 @@ func GenerateProto(resource Resource) GeneratedGroup {
 	)
 }
 
+// GenerateSQL these generate templates for sqlc
 func GenerateSQL(resource Resource) GeneratedGroup {
 	return GenerateTemplates(
 		resource,
 		NewTemplate("sqlTemplate", sqlTemplate, "queries.sql"),
 		NewTemplate("sqlYamlTemplate", sqlYamlTemplate, "sqlc.yaml"),
+		NewTemplate("sqlSchemeTemplate", sqlSchemeTemplate, "schema.sql"),
 	)
 }
 

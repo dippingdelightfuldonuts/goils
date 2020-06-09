@@ -1,0 +1,8 @@
+{{- $TableName := .TableName}}
+-- schema.sql
+CREATE TABLE {{ $TableName }} (
+{{- $size := len .Attributes }}
+{{- range $index, $element := .Attributes }}
+    {{ $element.ToTemplate }}{{if lt $index (add $size -1) }},{{ end }}
+{{- end }}
+);

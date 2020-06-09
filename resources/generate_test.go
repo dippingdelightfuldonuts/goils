@@ -179,6 +179,10 @@ func Test_GenerateSQL(t *testing.T) {
 					Output:  goldenFile("generatesqlyaml"),
 					FileOut: "sqlc.yaml",
 				},
+				GeneratedResult{
+					Output:  goldenFile("generatesqlschema"),
+					FileOut: "schema.sql",
+				},
 			},
 		},
 	}

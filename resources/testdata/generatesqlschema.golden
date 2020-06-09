@@ -1,0 +1,8 @@
+
+-- schema.sql
+CREATE TABLE sms (
+    id UUID NOT NULL,
+    text varchar(120) NOT NULL,
+    created_at date NOT NULL,
+    auto boolean NOT NULL
+);
