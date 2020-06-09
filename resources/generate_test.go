@@ -127,6 +127,7 @@ func Test_GenerateSQL(t *testing.T) {
 		name    string
 		args    args
 		want    string
+		want2   string
 		wantErr bool
 	}{
 		{
@@ -165,7 +166,8 @@ func Test_GenerateSQL(t *testing.T) {
 					},
 				},
 			},
-			want: goldenFile("generatesql"),
+			want:  goldenFile("generatesql"),
+			want2: goldenFile("generatesqlyaml"),
 		},
 	}
 	for _, tt := range tests {
@@ -173,7 +175,8 @@ func Test_GenerateSQL(t *testing.T) {
 			Convey("generateSQL", t, func() {
 				got, err := GenerateSQL(tt.args.resource)
 				So(err != nil, ShouldEqual, tt.wantErr)
-				So(got, ShouldResemble, tt.want)
+				So(got[0], ShouldResemble, tt.want)
+				So(got[1], ShouldResemble, tt.want2)
 			})
 		})
 	}
