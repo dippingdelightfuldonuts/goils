@@ -4,10 +4,10 @@
 SELECT * FROM sms
 WHERE ID = $1 LIMIT 1;
 
--- name: ListListSms :many
+-- name: ListSms :many
 SELECT * FROM sms;
 
--- name: CreateCreateSms : one
+-- name: CreateSms : one
 INSERT INTO sms (
     text,
     created_at,

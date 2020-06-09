@@ -16,6 +16,7 @@ const (
 	sqlTemplate         = "templates/database/sqlc.tmpl"
 	sqlYamlTemplate     = "templates/database/sqlc.yaml.tmpl"
 	sqlSchemeTemplate   = "templates/database/sqlc.schema.tmpl"
+	sqlTestTemplate     = "templates/testing/sql.test.tmpl"
 
 	directory = "output"
 )
@@ -141,6 +142,13 @@ func GenerateSQL(resource Resource) GeneratedGroup {
 		NewTemplate("sqlTemplate", sqlTemplate, "queries.sql"),
 		NewTemplate("sqlYamlTemplate", sqlYamlTemplate, "sqlc.yaml"),
 		NewTemplate("sqlSchemeTemplate", sqlSchemeTemplate, "schema.sql"),
+	)
+}
+
+func GenerateTests(resource Resource) GeneratedGroup {
+	return GenerateTemplates(
+		resource,
+		NewTemplate("sqlTestTemplate", sqlTestTemplate, "queries_test.go"),
 	)
 }
 

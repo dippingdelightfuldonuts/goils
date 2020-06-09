@@ -121,12 +121,27 @@ func (c CrudOption) MessageName() string {
 type Resource struct {
 	CreateTable
 	CrudOptions []CrudOption
+	Package     string
 }
 
 type ProtoMessage struct {
 	Name       string
+	ModelName  string
 	Type       string
 	Attributes []Attribute
+}
+
+func (pm ProtoMessage) CrudFuncName() string {
+	switch pm.Type {
+	case "show":
+		return "Get" + strcase.ToCamel(pm.ModelName)
+	case "index":
+		return "List" + strcase.ToCamel(pm.ModelName)
+	case "create":
+		return "Create" + strcase.ToCamel(pm.ModelName)
+	}
+
+	return ""
 }
 
 func newProtoMessage(resource Resource, typ string) ProtoMessage {
@@ -153,6 +168,7 @@ func newIndexProtoMessage(resource Resource) ProtoMessage {
 	return ProtoMessage{
 		Type:       "index",
 		Name:       "List" + strcase.ToCamel(resource.TableName),
+		ModelName:  strcase.ToCamel(resource.TableName),
 		Attributes: suitable,
 	}
 }
@@ -167,6 +183,7 @@ func newShowProtoMessage(resource Resource) ProtoMessage {
 	return ProtoMessage{
 		Type:       "show",
 		Name:       strcase.ToCamel(resource.TableName),
+		ModelName:  strcase.ToCamel(resource.TableName),
 		Attributes: indexed,
 	}
 }
@@ -179,7 +196,8 @@ func newCreateProtoMessage(resource Resource) ProtoMessage {
 
 	return ProtoMessage{
 		Type:       "create",
-		Name:       "Create" + strcase.ToCamel(resource.TableName),
+		Name:       "Create" + strcase.ToCamel(resource.TableName), // TODO: could change Name to func
+		ModelName:  strcase.ToCamel(resource.TableName),
 		Attributes: suitable,
 	}
 }

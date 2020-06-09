@@ -1,0 +1,50 @@
+package {{.Package}}
+
+import (
+	"context"
+	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
+	"weavelab.xyz/monorail/shared/wlib/uuid"
+)
+
+{{- $TableName := .TableName}}
+{{- $numCrud := len .CrudMessages }}
+{{- range $index, $element := .CrudMessages}}
+func Test{{$element.CrudFuncName}}(t *testing.T) {
+	expectedLocationID := uuid.NewV4()
+
+	type fields struct {
+
+	}
+	type args struct {
+		ctx context.Context
+		id  uuid.UUID
+	}
+	tests := []struct {
+		name 	string
+		fields  fields
+		args	args
+		want	{{ $element.ModelName }}
+		wantErr bool
+	}{
+		{
+			name: "returns requested {{ $element.ModelName }} given id",
+
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			Convey("test{{$element.CrudFuncName}}", t, func() {
+				got, err := s.{{ $element.CrudFuncName }}(tt.args.ctx, tt.args.id)
+				if tt.wantErr {
+					So(err, ShouldBeTrue)
+				}
+
+				So(got, ShouldResemble, tt.want)
+			})
+		})
+	}
+}
+{{- end }}

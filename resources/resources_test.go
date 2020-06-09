@@ -55,8 +55,9 @@ func Test_newProtoMessage(t *testing.T) {
 				typ: "show",
 			},
 			want: ProtoMessage{
-				Name: "Setting",
-				Type: "show",
+				Name:      "Setting",
+				ModelName: "Setting",
+				Type:      "show",
 				Attributes: []Attribute{
 					{
 						Name:     "id",
@@ -81,8 +82,9 @@ func Test_newProtoMessage(t *testing.T) {
 				typ: "index",
 			},
 			want: ProtoMessage{
-				Name: "ListSetting",
-				Type: "index",
+				Name:      "ListSetting",
+				ModelName: "Setting",
+				Type:      "index",
 				Attributes: []Attribute{
 					{
 						Name:     "locationid",

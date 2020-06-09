@@ -36,12 +36,14 @@ func main() {
 	resource := resources.Resource{
 		CreateTable: table,
 		CrudOptions: []resources.CrudOption{"show"},
+		Package:     "main",
 	}
 
 	groups := resources.GeneratedGroups{
 		resources.GenerateMigration(resource),
 		resources.GenerateProto(resource),
 		resources.GenerateSQL(resource),
+		resources.GenerateTests(resource),
 	}
 
 	groups.Each(func(group resources.GeneratedGroup) {

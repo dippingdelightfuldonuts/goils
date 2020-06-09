@@ -195,3 +195,67 @@ func Test_GenerateSQL(t *testing.T) {
 		})
 	}
 }
+
+func Test_GenerateTests(t *testing.T) {
+	type args struct {
+		resource Resource
+	}
+	tests := []struct {
+		name string
+		args args
+		want GeneratedGroup
+	}{
+		{
+			name: "should generate sqlc templates given resource",
+			args: args{
+				resource: Resource{
+					Package: "main",
+					CreateTable: CreateTable{
+						TableName: "sms",
+						Attributes: Attributes{
+							{
+								Name:     "id",
+								Type:     "UUID",
+								Nullable: false,
+							},
+							{
+								Name:     "text",
+								Type:     "string",
+								Nullable: false,
+							},
+							{
+								Name:     "created_at",
+								Type:     "date",
+								Nullable: false,
+							},
+							{
+								Name:     "auto",
+								Type:     "boolean",
+								Nullable: false,
+							},
+						},
+					},
+					CrudOptions: []CrudOption{
+						"show",
+						"index",
+						"create",
+					},
+				},
+			},
+			want: GeneratedGroup{
+				GeneratedResult{
+					Output:  goldenFile("generatetests"),
+					FileOut: "queries_test.go",
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			Convey("generateTests", t, func() {
+				got := GenerateTests(tt.args.resource)
+				So(got, ShouldResemble, tt.want)
+			})
+		})
+	}
+}

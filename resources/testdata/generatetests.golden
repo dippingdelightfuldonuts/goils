@@ -1,0 +1,117 @@
+package main
+
+import (
+	"context"
+	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
+	"weavelab.xyz/monorail/shared/wlib/uuid"
+)
+func TestGetSms(t *testing.T) {
+	expectedLocationID := uuid.NewV4()
+
+	type fields struct {
+
+	}
+	type args struct {
+		ctx context.Context
+		id  uuid.UUID
+	}
+	tests := []struct {
+		name 	string
+		fields  fields
+		args	args
+		want	Sms
+		wantErr bool
+	}{
+		{
+			name: "returns requested Sms given id",
+
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			Convey("testGetSms", t, func() {
+				got, err := s.GetSms(tt.args.ctx, tt.args.id)
+				if tt.wantErr {
+					So(err, ShouldBeTrue)
+				}
+
+				So(got, ShouldResemble, tt.want)
+			})
+		})
+	}
+}
+func TestListSms(t *testing.T) {
+	expectedLocationID := uuid.NewV4()
+
+	type fields struct {
+
+	}
+	type args struct {
+		ctx context.Context
+		id  uuid.UUID
+	}
+	tests := []struct {
+		name 	string
+		fields  fields
+		args	args
+		want	Sms
+		wantErr bool
+	}{
+		{
+			name: "returns requested Sms given id",
+
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			Convey("testListSms", t, func() {
+				got, err := s.ListSms(tt.args.ctx, tt.args.id)
+				if tt.wantErr {
+					So(err, ShouldBeTrue)
+				}
+
+				So(got, ShouldResemble, tt.want)
+			})
+		})
+	}
+}
+func TestCreateSms(t *testing.T) {
+	expectedLocationID := uuid.NewV4()
+
+	type fields struct {
+
+	}
+	type args struct {
+		ctx context.Context
+		id  uuid.UUID
+	}
+	tests := []struct {
+		name 	string
+		fields  fields
+		args	args
+		want	Sms
+		wantErr bool
+	}{
+		{
+			name: "returns requested Sms given id",
+
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			Convey("testCreateSms", t, func() {
+				got, err := s.CreateSms(tt.args.ctx, tt.args.id)
+				if tt.wantErr {
+					So(err, ShouldBeTrue)
+				}
+
+				So(got, ShouldResemble, tt.want)
+			})
+		})
+	}
+}
