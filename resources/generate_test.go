@@ -13,7 +13,7 @@ func Test_GenerateMigration(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want GeneratedResult
+		want GeneratedGroup
 	}{
 		{
 			name: "should generate template given resource",
@@ -46,8 +46,11 @@ func Test_GenerateMigration(t *testing.T) {
 					},
 				},
 			},
-			want: GeneratedResult{
-				Output: []string{goldenFile("generatemigration")},
+			want: GeneratedGroup{
+				GeneratedResult{
+					Output:  goldenFile("generatemigration"),
+					FileOut: "migration.sql",
+				},
 			},
 		},
 	}
@@ -68,7 +71,7 @@ func Test_GenerateProto(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want GeneratedResult
+		want GeneratedGroup
 	}{
 		{
 			name: "should generate template given resource",
@@ -104,8 +107,11 @@ func Test_GenerateProto(t *testing.T) {
 					},
 				},
 			},
-			want: GeneratedResult{
-				Output: []string{goldenFile("generateproto")},
+			want: GeneratedGroup{
+				GeneratedResult{
+					Output:  goldenFile("generateproto"),
+					FileOut: "proto.proto",
+				},
 			},
 		},
 	}
@@ -126,7 +132,7 @@ func Test_GenerateSQL(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want GeneratedResult
+		want GeneratedGroup
 	}{
 		{
 			name: "should generate sqlc templates given resource",
@@ -164,10 +170,14 @@ func Test_GenerateSQL(t *testing.T) {
 					},
 				},
 			},
-			want: GeneratedResult{
-				Output: []string{
-					goldenFile("generatesql"),
-					goldenFile("generatesqlyaml"),
+			want: GeneratedGroup{
+				GeneratedResult{
+					Output:  goldenFile("generatesql"),
+					FileOut: "queries.sql",
+				},
+				GeneratedResult{
+					Output:  goldenFile("generatesqlyaml"),
+					FileOut: "sqlc.yaml",
 				},
 			},
 		},

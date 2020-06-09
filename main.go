@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
-	"path/filepath"
 	"text/template"
 
 	"github.com/iancoleman/strcase"
@@ -53,25 +51,18 @@ func main() {
 		CrudOptions: []resources.CrudOption{"show"},
 	}
 
-	res := resources.GenerateMigration(resource)
-	if res.HasError() {
-		res.PrintError()
+	groups := resources.GeneratedGroups{
+		resources.GenerateMigration(resource),
+		resources.GenerateProto(resource),
+		resources.GenerateSQL(resource),
 	}
 
-	// TODO: loop through output(s)
-	err := ioutil.WriteFile(filepath.Join("output", "migration.sql"), []byte(res.Output[0]), 0644)
-	if err != nil {
-		fmt.Println("error:", err)
-	}
+	groups.Each(func(group resources.GeneratedGroup) {
+		if group.AnyErrors() {
+			group.PrintErrors()
+			return
+		}
 
-	res = resources.GenerateProto(resource)
-	fmt.Println("res: ", res)
-
-	res = resources.GenerateSQL(resource)
-	fmt.Println("sql2: ", res)
-
-	err = ioutil.WriteFile(filepath.Join("output", "queries.sql"), []byte(res.Output[0]), 0644)
-	if err != nil {
-		fmt.Println("err:", err)
-	}
+		group.CreateFiles()
+	})
 }
