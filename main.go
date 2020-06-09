@@ -2,22 +2,9 @@ package main
 
 import (
 	"fmt"
-	"text/template"
 
-	"github.com/iancoleman/strcase"
 	"weavelab.xyz/goils/resources"
 )
-
-func AllFunctions() template.FuncMap {
-	return template.FuncMap{
-		"add": func(a, b int) int {
-			return a + b
-		},
-		"camelcase": func(a string) string {
-			return strcase.ToCamel(a)
-		},
-	}
-}
 
 func main() {
 	fmt.Println("Hello, and welcome to Goils")
