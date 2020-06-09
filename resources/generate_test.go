@@ -11,10 +11,9 @@ func Test_GenerateMigration(t *testing.T) {
 		resource Resource
 	}
 	tests := []struct {
-		name    string
-		args    args
-		want    string
-		wantErr bool
+		name string
+		args args
+		want GeneratedResult
 	}{
 		{
 			name: "should generate template given resource",
@@ -47,14 +46,15 @@ func Test_GenerateMigration(t *testing.T) {
 					},
 				},
 			},
-			want: goldenFile("generatemigration"),
+			want: GeneratedResult{
+				Output: []string{goldenFile("generatemigration")},
+			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			Convey("generateMigration", t, func() {
-				got, err := GenerateMigration(tt.args.resource)
-				So(err != nil, ShouldEqual, tt.wantErr)
+				got := GenerateMigration(tt.args.resource)
 				So(got, ShouldResemble, tt.want)
 			})
 		})
@@ -66,10 +66,9 @@ func Test_GenerateProto(t *testing.T) {
 		resource Resource
 	}
 	tests := []struct {
-		name    string
-		args    args
-		want    string
-		wantErr bool
+		name string
+		args args
+		want GeneratedResult
 	}{
 		{
 			name: "should generate template given resource",
@@ -105,14 +104,15 @@ func Test_GenerateProto(t *testing.T) {
 					},
 				},
 			},
-			want: goldenFile("generateproto"),
+			want: GeneratedResult{
+				Output: []string{goldenFile("generateproto")},
+			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			Convey("generateProto", t, func() {
-				got, err := GenerateProto(tt.args.resource)
-				So(err != nil, ShouldEqual, tt.wantErr)
+				got := GenerateProto(tt.args.resource)
 				So(got, ShouldResemble, tt.want)
 			})
 		})
@@ -124,11 +124,9 @@ func Test_GenerateSQL(t *testing.T) {
 		resource Resource
 	}
 	tests := []struct {
-		name    string
-		args    args
-		want    string
-		want2   string
-		wantErr bool
+		name string
+		args args
+		want GeneratedResult
 	}{
 		{
 			name: "should generate sqlc templates given resource",
@@ -166,17 +164,19 @@ func Test_GenerateSQL(t *testing.T) {
 					},
 				},
 			},
-			want:  goldenFile("generatesql"),
-			want2: goldenFile("generatesqlyaml"),
+			want: GeneratedResult{
+				Output: []string{
+					goldenFile("generatesql"),
+					goldenFile("generatesqlyaml"),
+				},
+			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			Convey("generateSQL", t, func() {
-				got, err := GenerateSQL(tt.args.resource)
-				So(err != nil, ShouldEqual, tt.wantErr)
-				So(got[0], ShouldResemble, tt.want)
-				So(got[1], ShouldResemble, tt.want2)
+				got := GenerateSQL(tt.args.resource)
+				So(got, ShouldResemble, tt.want)
 			})
 		})
 	}
