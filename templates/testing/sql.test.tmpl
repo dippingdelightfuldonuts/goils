@@ -4,6 +4,8 @@ import (
 	"context"
 	"testing"
 
+	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/jmoiron/sqlx"
 	. "github.com/smartystreets/goconvey/convey"
 	"weavelab.xyz/monorail/shared/wlib/uuid"
 )
@@ -12,10 +14,24 @@ import (
 {{- $numCrud := len .CrudMessages }}
 {{- range $index, $element := .CrudMessages}}
 func Test{{$element.CrudFuncName}}(t *testing.T) {
+	expectedSMSID := uuid.NewV4()
 	expectedLocationID := uuid.NewV4()
 
-	type fields struct {
+	mockDB, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("%v | %s", err, "error creating mock database")
+	}
 
+	columns := []string{"id", "locationid"}
+	mock.ExpectQuery("^SELECT id, locationid FROM (.+)").
+		WillReturnRows(mock.NewRows(columns).AddRow(
+			expectedSMSID.String(), expectedLocationID.String()),
+		)
+
+	sqlxMockDB := sqlx.NewDb(mockDB, "postgres")
+
+	type fields struct {
+		db DBTX
 	}
 	type args struct {
 		ctx context.Context
@@ -30,14 +46,22 @@ func Test{{$element.CrudFuncName}}(t *testing.T) {
 	}{
 		{
 			name: "returns requested {{ $element.ModelName }} given id",
-
+			args: args{
+				ctx: context.Background(),
+				id:  expectedSMSID,
+			},
+			fields: fields{
+				db: sqlxMockDB,
+			},
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			Convey("test{{$element.CrudFuncName}}", t, func() {
-				got, err := s.{{ $element.CrudFuncName }}(tt.args.ctx, tt.args.id)
+				pg := New(tt.fields.db)
+
+				got, err := pg.{{ $element.CrudFuncName }}(tt.args.ctx, tt.args.id)
 				if tt.wantErr {
 					So(err, ShouldBeTrue)
 				}
