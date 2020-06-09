@@ -66,6 +66,12 @@ func main() {
 	res, err = resources.GenerateProto(resource)
 	fmt.Println("res: ", res)
 
-	res, err = resources.GenerateSQL(resource)
-	fmt.Println("sql: ", res)
+	var res2 []string
+	res2, err = resources.GenerateSQL(resource)
+	fmt.Println("sql2: ", res2)
+
+	err = ioutil.WriteFile(filepath.Join("output", "queries.sql"), []byte(res), 0644)
+	if err != nil {
+		fmt.Println("err:", err)
+	}
 }
