@@ -2,6 +2,7 @@ package resources
 
 import (
 	"bytes"
+	"fmt"
 	"io/ioutil"
 	"path/filepath"
 	"text/template"
@@ -27,35 +28,76 @@ func templateFunctions() template.FuncMap {
 	}
 }
 
-func GenerateMigration(resource Resource) (string, error) {
-	return generateStandardTemplate(resource, "createTableTemplate", createTableTemplate)
+type Template struct {
+	label        string
+	templateFile string
+}
+type Templates []Template
+
+func NewTemplate(label string, templateFile string) Template {
+	return Template{
+		label:        label,
+		templateFile: templateFile,
+	}
 }
 
-// TODO: make all generate funcs follow same pattern (i.e. array of funcs to call)
-func GenerateProto(resource Resource) (string, error) {
-	return generateStandardTemplate(resource, "grpcMessageTemplate", grpcMessageTemplate)
+func GenerateTemplates(resource Resource, templates ...Template) GeneratedResult {
+	return Templates(templates).Run(resource)
 }
 
-func GenerateSQL(resource Resource) ([]string, error) {
-	str, err := generateSQLTemplate(resource)
-	if err != nil {
-		return nil, err
+type GeneratedResult struct {
+	Output []string
+	Error  error
+}
+type GeneratedResults []GeneratedResult
+
+func (g GeneratedResult) HasError() bool {
+	return g.Error != nil
+}
+
+func (g GeneratedResult) PrintError() {
+	fmt.Println("err:", g.Error)
+}
+
+func (t Templates) Run(resource Resource) GeneratedResult {
+	var runtimeError error
+	generated := make([]string, len(t))
+
+	for i, templ := range t {
+		gen, err := generateStandardTemplate(resource, templ.label, templ.templateFile)
+		if err != nil {
+			runtimeError = err
+			break
+		}
+		generated[i] = gen
 	}
 
-	str2, err := generateSQLYamlTemplate(resource)
-	if err != nil {
-		return nil, err
+	return GeneratedResult{
+		Output: generated,
+		Error:  runtimeError,
 	}
-
-	return []string{str, str2}, nil
 }
 
-func generateSQLTemplate(resource Resource) (string, error) {
-	return generateStandardTemplate(resource, "sqlTemplate", sqlTemplate)
+func GenerateMigration(resource Resource) GeneratedResult {
+	return GenerateTemplates(
+		resource,
+		NewTemplate("createTableTemplate", createTableTemplate),
+	)
 }
 
-func generateSQLYamlTemplate(resource Resource) (string, error) {
-	return generateStandardTemplate(resource, "sqlYamlTemplate", sqlYamlTemplate)
+func GenerateProto(resource Resource) GeneratedResult {
+	return GenerateTemplates(
+		resource,
+		NewTemplate("grpcMessageTemplate", grpcMessageTemplate),
+	)
+}
+
+func GenerateSQL(resource Resource) GeneratedResult {
+	return GenerateTemplates(
+		resource,
+		NewTemplate("sqlTemplate", sqlTemplate),
+		NewTemplate("sqlYamlTemplate", sqlYamlTemplate),
+	)
 }
 
 func generateStandardTemplate(resource Resource, label string, templateFile string) (string, error) {

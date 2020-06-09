@@ -53,24 +53,24 @@ func main() {
 		CrudOptions: []resources.CrudOption{"show"},
 	}
 
-	res, err := resources.GenerateMigration(resource)
-	if err != nil {
-		fmt.Println("err:", err)
+	res := resources.GenerateMigration(resource)
+	if res.HasError() {
+		res.PrintError()
 	}
 
-	err = ioutil.WriteFile(filepath.Join("output", "migration.sql"), []byte(res), 0644)
+	// TODO: loop through output(s)
+	err := ioutil.WriteFile(filepath.Join("output", "migration.sql"), []byte(res.Output[0]), 0644)
 	if err != nil {
-		fmt.Println("err:", err)
+		fmt.Println("error:", err)
 	}
 
-	res, err = resources.GenerateProto(resource)
+	res = resources.GenerateProto(resource)
 	fmt.Println("res: ", res)
 
-	var res2 []string
-	res2, err = resources.GenerateSQL(resource)
-	fmt.Println("sql2: ", res2)
+	res = resources.GenerateSQL(resource)
+	fmt.Println("sql2: ", res)
 
-	err = ioutil.WriteFile(filepath.Join("output", "queries.sql"), []byte(res), 0644)
+	err = ioutil.WriteFile(filepath.Join("output", "queries.sql"), []byte(res.Output[0]), 0644)
 	if err != nil {
 		fmt.Println("err:", err)
 	}
