@@ -56,7 +56,6 @@ func TestGetSms(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			Convey("testGetSms", t, func() {
 				pg := New(tt.fields.db)
-
 				got, err := pg.GetSms(tt.args.ctx, tt.args.id)
 				if tt.wantErr {
 					So(err, ShouldBeTrue)
@@ -77,7 +76,7 @@ func TestListSms(t *testing.T) {
 	}
 
 	columns := []string{"id", "locationid"}
-	mock.ExpectQuery("^SELECT id, locationid FROM (.+)").
+	mock.ExpectQuery("^SELECT * FROM (.+)").
 		WillReturnRows(mock.NewRows(columns).AddRow(
 			expectedSMSID.String(), expectedLocationID.String()),
 		)
@@ -89,7 +88,6 @@ func TestListSms(t *testing.T) {
 	}
 	type args struct {
 		ctx context.Context
-		id  uuid.UUID
 	}
 	tests := []struct {
 		name 	string
@@ -99,10 +97,9 @@ func TestListSms(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "returns requested Sms given id",
+			name: "returns list of Smses",
 			args: args{
 				ctx: context.Background(),
-				id:  expectedSMSID,
 			},
 			fields: fields{
 				db: sqlxMockDB,
@@ -114,8 +111,7 @@ func TestListSms(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			Convey("testListSms", t, func() {
 				pg := New(tt.fields.db)
-
-				got, err := pg.ListSms(tt.args.ctx, tt.args.id)
+				got, err := pg.ListSms(tt.args.ctx)
 				if tt.wantErr {
 					So(err, ShouldBeTrue)
 				}
@@ -126,7 +122,6 @@ func TestListSms(t *testing.T) {
 	}
 }
 func TestCreateSms(t *testing.T) {
-	expectedSMSID := uuid.NewV4()
 	expectedLocationID := uuid.NewV4()
 
 	mockDB, mock, err := sqlmock.New()
@@ -135,7 +130,7 @@ func TestCreateSms(t *testing.T) {
 	}
 
 	columns := []string{"id", "locationid"}
-	mock.ExpectQuery("^SELECT id, locationid FROM (.+)").
+	mock.ExpectQuery("^INSERT INTO (.+)").
 		WillReturnRows(mock.NewRows(columns).AddRow(
 			expectedSMSID.String(), expectedLocationID.String()),
 		)
@@ -147,7 +142,6 @@ func TestCreateSms(t *testing.T) {
 	}
 	type args struct {
 		ctx context.Context
-		id  uuid.UUID
 	}
 	tests := []struct {
 		name 	string
@@ -157,10 +151,9 @@ func TestCreateSms(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "returns requested Sms given id",
+			name: "creates Sms given attributes",
 			args: args{
 				ctx: context.Background(),
-				id:  expectedSMSID,
 			},
 			fields: fields{
 				db: sqlxMockDB,
@@ -172,8 +165,7 @@ func TestCreateSms(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			Convey("testCreateSms", t, func() {
 				pg := New(tt.fields.db)
-
-				got, err := pg.CreateSms(tt.args.ctx, tt.args.id)
+				got, err := pg.CreateSms(tt.args.ctx)
 				if tt.wantErr {
 					So(err, ShouldBeTrue)
 				}

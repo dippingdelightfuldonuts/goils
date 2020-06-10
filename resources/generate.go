@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
+	"strings"
 	"text/template"
 
 	"github.com/iancoleman/strcase"
@@ -28,6 +29,13 @@ func templateFunctions() template.FuncMap {
 		},
 		"camelcase": func(a string) string {
 			return strcase.ToCamel(a)
+		},
+		"pluralize": func(a string) string {
+			if strings.HasSuffix(a, "s") {
+				return a + "es"
+			}
+
+			return a + "s"
 		},
 	}
 }

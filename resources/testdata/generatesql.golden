@@ -7,7 +7,7 @@ WHERE ID = $1 LIMIT 1;
 -- name: ListSms :many
 SELECT * FROM sms;
 
--- name: CreateSms : one
+-- name: CreateSms :one
 INSERT INTO sms (
     text,
     created_at,
@@ -16,4 +16,5 @@ INSERT INTO sms (
     $1,
     $2,
     $3
-);
+)
+RETURNING *;

@@ -11,7 +11,7 @@ WHERE ID = $1 LIMIT 1;
 SELECT * FROM {{$TableName}};
 {{- end }}
 {{- if eq $element.Type "create" }}
--- name: {{$element.CrudFuncName}} : one
+-- name: {{$element.CrudFuncName}} :one
 INSERT INTO {{$TableName}} (
 {{- $size := len .Attributes }}
 {{- range $index, $attr := .Attributes }}
@@ -21,6 +21,7 @@ INSERT INTO {{$TableName}} (
 {{- range $index, $attr := .Attributes }}
     ${{ add $index 1}}{{if lt $index (add $size -1) }},{{ end }}
 {{- end }}
-);
+)
+RETURNING *;
 {{- end }}
 {{- end }}

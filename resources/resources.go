@@ -154,6 +154,25 @@ func crudPrefix(typ string) string {
 	return ""
 }
 
+// CrudAttributes returns the attributes to send for crud action
+// TODO: we might need to reference table here so we know the index attributes
+func (pm ProtoMessage) CrudAttributes() []string {
+	switch pm.Type {
+	case "show":
+		return []string{"id"}
+	case "index":
+		return []string{}
+	case "create":
+		return []string{} // TODO: needs to be all pertinent attributes
+	case "delete":
+		return []string{"id"}
+	case "update":
+		return []string{"id"} // TODO: needs to include pertinent attributes too
+	}
+
+	return []string{}
+}
+
 func newProtoMessage(resource Resource, typ string) ProtoMessage {
 	pm := ProtoMessage{
 		Type: typ,

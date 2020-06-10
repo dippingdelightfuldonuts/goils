@@ -35,7 +35,7 @@ func main() {
 
 	resource := resources.Resource{
 		CreateTable: table,
-		CrudOptions: []resources.CrudOption{"show"},
+		CrudOptions: []resources.CrudOption{"show", "index", "create"},
 		Package:     "main",
 	}
 

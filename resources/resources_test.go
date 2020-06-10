@@ -178,3 +178,73 @@ func TestProtoMessage_CrudFuncName(t *testing.T) {
 		})
 	}
 }
+
+func TestProtoMessage_CrudAttributes(t *testing.T) {
+	type fields struct {
+		Name       string
+		ModelName  string
+		Type       string
+		Attributes []Attribute
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   []string
+	}{
+		{
+			name: "given Type is 'show' returns id",
+			fields: fields{
+				Type: "show",
+			},
+			want: []string{
+				"id",
+			},
+		},
+		{
+			name: "given Type is 'index' returns id",
+			fields: fields{
+				Type: "index",
+			},
+			want: []string{},
+		},
+		{
+			name: "given Type is 'create' returns id",
+			fields: fields{
+				Type: "create",
+			},
+			want: []string{},
+		},
+		{
+			name: "given Type is 'update' returns id",
+			fields: fields{
+				Type: "update",
+			},
+			want: []string{
+				"id",
+			},
+		},
+		{
+			name: "given Type is 'delete' returns id",
+			fields: fields{
+				Type: "delete",
+			},
+			want: []string{
+				"id",
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			Convey("CrudAttributes", t, func() {
+				pm := ProtoMessage{
+					Name:       tt.fields.Name,
+					ModelName:  tt.fields.ModelName,
+					Type:       tt.fields.Type,
+					Attributes: tt.fields.Attributes,
+				}
+				got := pm.CrudAttributes()
+				So(got, ShouldResemble, tt.want)
+			})
+		})
+	}
+}

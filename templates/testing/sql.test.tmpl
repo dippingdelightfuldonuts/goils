@@ -14,7 +14,9 @@ import (
 {{- $numCrud := len .CrudMessages }}
 {{- range $index, $element := .CrudMessages}}
 func Test{{$element.CrudFuncName}}(t *testing.T) {
+	{{- if eq $element.Type "show" "index" "delete" "update"}}
 	expectedSMSID := uuid.NewV4()
+	{{- end }}
 	expectedLocationID := uuid.NewV4()
 
 	mockDB, mock, err := sqlmock.New()
@@ -23,10 +25,36 @@ func Test{{$element.CrudFuncName}}(t *testing.T) {
 	}
 
 	columns := []string{"id", "locationid"}
+	{{- if eq $element.Type "show" }}
 	mock.ExpectQuery("^SELECT id, locationid FROM (.+)").
 		WillReturnRows(mock.NewRows(columns).AddRow(
 			expectedSMSID.String(), expectedLocationID.String()),
 		)
+	{{- end }}
+	{{- if eq $element.Type "create" }}
+	mock.ExpectQuery("^INSERT INTO (.+)").
+		WillReturnRows(mock.NewRows(columns).AddRow(
+			expectedSMSID.String(), expectedLocationID.String()),
+		)
+	{{- end }}
+	{{- if eq $element.Type "index" }}
+	mock.ExpectQuery("^SELECT * FROM (.+)").
+		WillReturnRows(mock.NewRows(columns).AddRow(
+			expectedSMSID.String(), expectedLocationID.String()),
+		)
+	{{- end }}
+	{{- if eq $element.Type "delete" }}
+	mock.ExpectQuery("^DELETE FROM (.+) WHERE id = ").
+		WillReturnRows(mock.NewRows(columns).AddRow(
+			expectedSMSID.String(), expectedLocationID.String()),
+		)
+	{{- end }}
+	{{- if eq $element.Type "update" }}
+	mock.ExpectQuery("^UPDATE FROM (.+) WHERE id = ").
+		WillReturnRows(mock.NewRows(columns).AddRow(
+			expectedSMSID.String(), expectedLocationID.String()),
+		)
+	{{- end }}
 
 	sqlxMockDB := sqlx.NewDb(mockDB, "postgres")
 
@@ -35,7 +63,9 @@ func Test{{$element.CrudFuncName}}(t *testing.T) {
 	}
 	type args struct {
 		ctx context.Context
+		{{- if eq $element.Type "show" "delete" "update" }}
 		id  uuid.UUID
+		{{- end }}
 	}
 	tests := []struct {
 		name 	string
@@ -45,10 +75,26 @@ func Test{{$element.CrudFuncName}}(t *testing.T) {
 		wantErr bool
 	}{
 		{
+			{{- if eq $element.Type "show" }}
 			name: "returns requested {{ $element.ModelName }} given id",
+			{{- end }}
+			{{- if eq $element.Type "create" }}
+			name: "creates {{ $element.ModelName }} given attributes",
+			{{- end }}
+			{{- if eq $element.Type "delete" }}
+			name: "deletes {{ $element.ModelName }} by given id",
+			{{- end }}
+			{{- if eq $element.Type "update" }}
+			name: "updates {{ $element.ModelName }} by given id and attributes",
+			{{- end }}
+			{{- if eq $element.Type "index" }}
+			name: "returns list of {{ pluralize $element.ModelName }}",
+			{{- end }}
 			args: args{
 				ctx: context.Background(),
+				{{- if eq $element.Type "show" "delete" "update"}}
 				id:  expectedSMSID,
+				{{- end }}
 			},
 			fields: fields{
 				db: sqlxMockDB,
@@ -61,7 +107,15 @@ func Test{{$element.CrudFuncName}}(t *testing.T) {
 			Convey("test{{$element.CrudFuncName}}", t, func() {
 				pg := New(tt.fields.db)
 
+				{{- if eq $element.Type "show" "delete" "update" }}
 				got, err := pg.{{ $element.CrudFuncName }}(tt.args.ctx, tt.args.id)
+				{{- end }}
+				{{- if eq $element.Type "create" }}
+				got, err := pg.{{ $element.CrudFuncName }}(tt.args.ctx)
+				{{- end }}
+				{{- if eq $element.Type "index" }}
+				got, err := pg.{{ $element.CrudFuncName }}(tt.args.ctx)
+				{{- end }}
 				if tt.wantErr {
 					So(err, ShouldBeTrue)
 				}
