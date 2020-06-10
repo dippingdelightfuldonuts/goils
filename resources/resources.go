@@ -173,6 +173,17 @@ func (pm ProtoMessage) CrudAttributes() []string {
 	return []string{}
 }
 
+func (pm ProtoMessage) TestCrudAttributes() []string {
+	attrs := pm.CrudAttributes()
+	results := make([]string, len(attrs))
+
+	for i, r := range attrs {
+		results[i] = "tt.args." + r
+	}
+
+	return results
+}
+
 func newProtoMessage(resource Resource, typ string) ProtoMessage {
 	pm := ProtoMessage{
 		Type: typ,

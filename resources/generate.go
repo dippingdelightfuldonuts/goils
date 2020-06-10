@@ -37,6 +37,23 @@ func templateFunctions() template.FuncMap {
 
 			return a + "s"
 		},
+		"join": func(a []string) string {
+			return strings.Join(a, ", ")
+		},
+		"empty": func(a []string) bool {
+			if len(a) == 0 {
+				return true
+			}
+
+			return false
+		},
+		"present": func(a []string) bool {
+			if len(a) > 0 {
+				return true
+			}
+
+			return false
+		},
 	}
 }
 

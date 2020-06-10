@@ -56,6 +56,7 @@ func TestGetSms(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			Convey("testGetSms", t, func() {
 				pg := New(tt.fields.db)
+
 				got, err := pg.GetSms(tt.args.ctx, tt.args.id)
 				if tt.wantErr {
 					So(err, ShouldBeTrue)
@@ -111,6 +112,7 @@ func TestListSms(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			Convey("testListSms", t, func() {
 				pg := New(tt.fields.db)
+
 				got, err := pg.ListSms(tt.args.ctx)
 				if tt.wantErr {
 					So(err, ShouldBeTrue)
@@ -165,6 +167,7 @@ func TestCreateSms(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			Convey("testCreateSms", t, func() {
 				pg := New(tt.fields.db)
+
 				got, err := pg.CreateSms(tt.args.ctx)
 				if tt.wantErr {
 					So(err, ShouldBeTrue)

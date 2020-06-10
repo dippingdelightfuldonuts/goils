@@ -107,15 +107,7 @@ func Test{{$element.CrudFuncName}}(t *testing.T) {
 			Convey("test{{$element.CrudFuncName}}", t, func() {
 				pg := New(tt.fields.db)
 
-				{{- if eq $element.Type "show" "delete" "update" }}
-				got, err := pg.{{ $element.CrudFuncName }}(tt.args.ctx, tt.args.id)
-				{{- end }}
-				{{- if eq $element.Type "create" }}
-				got, err := pg.{{ $element.CrudFuncName }}(tt.args.ctx)
-				{{- end }}
-				{{- if eq $element.Type "index" }}
-				got, err := pg.{{ $element.CrudFuncName }}(tt.args.ctx)
-				{{- end }}
+				got, err := pg.{{ $element.CrudFuncName }}(tt.args.ctx{{ if present $element.TestCrudAttributes }}, {{ end }}{{ join $element.TestCrudAttributes }})
 				if tt.wantErr {
 					So(err, ShouldBeTrue)
 				}
