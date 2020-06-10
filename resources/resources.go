@@ -131,14 +131,24 @@ type ProtoMessage struct {
 	Attributes []Attribute
 }
 
+// CrudFuncName returns the name of the crud function
+// TODO: ProtoMessage?? should we call it something else
 func (pm ProtoMessage) CrudFuncName() string {
-	switch pm.Type {
+	return crudPrefix(pm.Type) + strcase.ToCamel(pm.ModelName)
+}
+
+func crudPrefix(typ string) string {
+	switch typ {
 	case "show":
-		return "Get" + strcase.ToCamel(pm.ModelName)
+		return "Get"
 	case "index":
-		return "List" + strcase.ToCamel(pm.ModelName)
+		return "List"
 	case "create":
-		return "Create" + strcase.ToCamel(pm.ModelName)
+		return "Create"
+	case "update":
+		return "Update"
+	case "delete":
+		return "Delete"
 	}
 
 	return ""
