@@ -19,7 +19,8 @@ const (
 	sqlSchemeTemplate   = "templates/database/sqlc.schema.tmpl"
 	sqlTestTemplate     = "templates/testing/sql.test.tmpl"
 
-	directory = "output"
+	directory         = "output"
+	templateTimestamp = "{timestamp}"
 )
 
 func templateFunctions() template.FuncMap {
@@ -94,6 +95,15 @@ func (g GeneratedResult) CreateFile() error {
 	return ioutil.WriteFile(filepath.Join(directory, g.FileOut), []byte(g.Output), 0644)
 }
 
+// parseFileOut takes file name string and replaces templates with template values (i.e. date)
+func parseFileOut(fileOut string) string {
+	if strings.Contains(fileOut, templateTimestamp) {
+		return strings.ReplaceAll(fileOut, templateTimestamp, CurrentTime().Format("20060102150405"))
+	}
+
+	return fileOut
+}
+
 type GeneratedGroup []GeneratedResult
 
 func (g GeneratedGroup) CreateFiles() {
@@ -147,9 +157,12 @@ func (t Templates) Run(resource Resource) GeneratedGroup {
 }
 
 func GenerateMigration(resource Resource) GeneratedGroup {
+	// TODO: use template system with filename too
+	output := parseFileOut("{timestamp}_create_" + resource.TableName + "_table.sql")
+
 	return GenerateTemplates(
 		resource,
-		NewTemplate("createTableTemplate", createTableTemplate, "migration.sql"),
+		NewTemplate("createTableTemplate", createTableTemplate, output),
 	)
 }
 

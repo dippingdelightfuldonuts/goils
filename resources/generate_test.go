@@ -2,11 +2,14 @@ package resources
 
 import (
 	"testing"
+	"time"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
 
 func Test_GenerateMigration(t *testing.T) {
+	MockedTime = time.Date(2020, 6, 15, 12, 0, 0, 0, time.UTC)
+
 	type args struct {
 		resource Resource
 	}
@@ -49,7 +52,7 @@ func Test_GenerateMigration(t *testing.T) {
 			want: GeneratedGroup{
 				GeneratedResult{
 					Output:  goldenFile("generatemigration"),
-					FileOut: "migration.sql",
+					FileOut: "20200615120000_create_sms_table.sql",
 				},
 			},
 		},

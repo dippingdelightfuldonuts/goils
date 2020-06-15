@@ -16,4 +16,4 @@ WITH
 -- +goose Down
 -- +goose StatementBegin
 DROP TABLE sms;
--- +goose StatmentEnd
+-- +goose StatementEnd
