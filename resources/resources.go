@@ -5,6 +5,8 @@ import (
 	"strings"
 
 	"github.com/iancoleman/strcase"
+
+	. "weavelab.xyz/goils/extstring"
 )
 
 type AttributeType string
@@ -129,6 +131,37 @@ type ProtoMessage struct {
 	ModelName  string
 	Type       string
 	Attributes []Attribute
+	Verb       ExtString
+	Noun       ExtString
+}
+
+// MethodName returns recommended proto rpc MethodName
+// (i.e. Verb + Name(s): Get + Book = GetBook
+func (pm ProtoMessage) MethodName() ExtString {
+	v := pm.Verb.Downcase()
+	switch v {
+	case "list":
+		return pm.Verb.Titlecase() + pm.Noun.Titlecase().Pluralize()
+	}
+
+	return pm.Verb.Titlecase() + pm.Noun.Titlecase()
+}
+
+// RequestMessageName returns recommended name for proto request message
+func (pm ProtoMessage) RequestMessageName() ExtString {
+	return pm.MethodName() + "Request"
+}
+
+// ResponseMessageName returns recommended name for proto response message
+func (pm ProtoMessage) ResponseMessageName() ExtString {
+	switch pm.Verb.Downcase() {
+	case "list", "rename":
+		return pm.MethodName() + "Response"
+	case "delete":
+		return "google.protobuf.Empty" // TODO: might need to work on this
+	}
+
+	return pm.Noun.Titlecase()
 }
 
 // CrudFuncName returns the name of the crud function

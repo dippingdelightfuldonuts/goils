@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+	. "weavelab.xyz/goils/extstring"
 )
 
 func Test_newProtoMessage(t *testing.T) {
@@ -82,7 +83,7 @@ func Test_newProtoMessage(t *testing.T) {
 				typ: "index",
 			},
 			want: ProtoMessage{
-				Name:      "ListSetting",
+				Name:      "ListSettingsRequest",
 				ModelName: "Setting",
 				Type:      "index",
 				Attributes: []Attribute{
@@ -244,6 +245,320 @@ func TestProtoMessage_CrudAttributes(t *testing.T) {
 				}
 				got := pm.CrudAttributes()
 				So(got, ShouldResemble, tt.want)
+			})
+		})
+	}
+}
+
+func TestProtoMessage_MethodName(t *testing.T) {
+	type fields struct {
+		Name       string
+		ModelName  string
+		Type       string
+		Attributes []Attribute
+		Verb       ExtString
+		Noun       ExtString
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   ExtString
+	}{
+		{
+			name: "Returns MethodName representing 'List' ProtoMessage",
+			fields: fields{
+				Name:       "book", // TODO: revisit Name and ModelName and Noun
+				ModelName:  "book",
+				Type:       "",            // TODO: revisit Type
+				Attributes: []Attribute{}, // ignored
+				Verb:       "list",
+				Noun:       "book",
+			},
+			want: "ListBooks",
+		},
+		{
+			name: "Returns MethodName representing 'Get' ProtoMessage",
+			fields: fields{
+				Name:       "book", // TODO: revisit Name and ModelName and Noun
+				ModelName:  "book",
+				Type:       "",            // TODO: revisit Type
+				Attributes: []Attribute{}, // ignored
+				Verb:       "get",
+				Noun:       "book",
+			},
+			want: "GetBook",
+		},
+		{
+			name: "Returns MethodName representing 'Create' ProtoMessage",
+			fields: fields{
+				Name:       "book", // TODO: revisit Name and ModelName and Noun
+				ModelName:  "book",
+				Type:       "",            // TODO: revisit Type
+				Attributes: []Attribute{}, // ignored
+				Verb:       "create",
+				Noun:       "book",
+			},
+			want: "CreateBook",
+		},
+		{
+			name: "Returns MethodName representing 'Update' ProtoMessage",
+			fields: fields{
+				Name:       "book", // TODO: revisit Name and ModelName and Noun
+				ModelName:  "book",
+				Type:       "",            // TODO: revisit Type
+				Attributes: []Attribute{}, // ignored
+				Verb:       "update",
+				Noun:       "book",
+			},
+			want: "UpdateBook",
+		},
+		{
+			name: "Returns MethodName representing 'Rename' ProtoMessage",
+			fields: fields{
+				Name:       "book", // TODO: revisit Name and ModelName and Noun
+				ModelName:  "book",
+				Type:       "",            // TODO: revisit Type
+				Attributes: []Attribute{}, // ignored
+				Verb:       "rename",
+				Noun:       "book",
+			},
+			want: "RenameBook",
+		},
+		{
+			name: "Returns MethodName representing 'Delete' ProtoMessage",
+			fields: fields{
+				Name:       "book", // TODO: revisit Name and ModelName and Noun
+				ModelName:  "book",
+				Type:       "",            // TODO: revisit Type
+				Attributes: []Attribute{}, // ignored
+				Verb:       "delete",
+				Noun:       "book",
+			},
+			want: "DeleteBook",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			Convey("MethodName", t, func() {
+
+				pm := ProtoMessage{
+					Name:       tt.fields.Name,
+					ModelName:  tt.fields.ModelName,
+					Type:       tt.fields.Type,
+					Attributes: tt.fields.Attributes,
+					Verb:       tt.fields.Verb,
+					Noun:       tt.fields.Noun,
+				}
+
+				So(pm.MethodName(), ShouldResemble, tt.want)
+			})
+		})
+	}
+}
+
+func TestProtoMessage_RequestMessageName(t *testing.T) {
+	type fields struct {
+		Name       string
+		ModelName  string
+		Type       string
+		Attributes []Attribute
+		Verb       ExtString
+		Noun       ExtString
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   ExtString
+	}{
+		{
+			name: "Returns RequestMessageName representing 'List' ProtoMessage",
+			fields: fields{
+				Name:       "book", // TODO: revisit Name and ModelName and Noun
+				ModelName:  "book",
+				Type:       "",            // TODO: revisit Type
+				Attributes: []Attribute{}, // ignored
+				Verb:       "list",
+				Noun:       "book",
+			},
+			want: "ListBooksRequest",
+		},
+		{
+			name: "Returns RequestMessageName representing 'Get' ProtoMessage",
+			fields: fields{
+				Name:       "book", // TODO: revisit Name and ModelName and Noun
+				ModelName:  "book",
+				Type:       "",            // TODO: revisit Type
+				Attributes: []Attribute{}, // ignored
+				Verb:       "get",
+				Noun:       "book",
+			},
+			want: "GetBookRequest",
+		},
+		{
+			name: "Returns RequestMessageName representing 'Create' ProtoMessage",
+			fields: fields{
+				Name:       "book", // TODO: revisit Name and ModelName and Noun
+				ModelName:  "book",
+				Type:       "",            // TODO: revisit Type
+				Attributes: []Attribute{}, // ignored
+				Verb:       "create",
+				Noun:       "book",
+			},
+			want: "CreateBookRequest",
+		},
+		{
+			name: "Returns RequestMessageName representing 'Update' ProtoMessage",
+			fields: fields{
+				Name:       "book", // TODO: revisit Name and ModelName and Noun
+				ModelName:  "book",
+				Type:       "",            // TODO: revisit Type
+				Attributes: []Attribute{}, // ignored
+				Verb:       "update",
+				Noun:       "book",
+			},
+			want: "UpdateBookRequest",
+		},
+		{
+			name: "Returns RequestMessageName representing 'Rename' ProtoMessage",
+			fields: fields{
+				Name:       "book", // TODO: revisit Name and ModelName and Noun
+				ModelName:  "book",
+				Type:       "",            // TODO: revisit Type
+				Attributes: []Attribute{}, // ignored
+				Verb:       "rename",
+				Noun:       "book",
+			},
+			want: "RenameBookRequest",
+		},
+		{
+			name: "Returns RequestMessageName representing 'Delete' ProtoMessage",
+			fields: fields{
+				Name:       "book", // TODO: revisit Name and ModelName and Noun
+				ModelName:  "book",
+				Type:       "",            // TODO: revisit Type
+				Attributes: []Attribute{}, // ignored
+				Verb:       "delete",
+				Noun:       "book",
+			},
+			want: "DeleteBookRequest",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			Convey("RequestMessageName", t, func() {
+				pm := ProtoMessage{
+					Name:       tt.fields.Name,
+					ModelName:  tt.fields.ModelName,
+					Type:       tt.fields.Type,
+					Attributes: tt.fields.Attributes,
+					Verb:       tt.fields.Verb,
+					Noun:       tt.fields.Noun,
+				}
+				So(pm.RequestMessageName(), ShouldResemble, tt.want)
+			})
+		})
+	}
+}
+
+func TestProtoMessage_ResponseMessageName(t *testing.T) {
+	type fields struct {
+		Name       string
+		ModelName  string
+		Type       string
+		Attributes []Attribute
+		Verb       ExtString
+		Noun       ExtString
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   ExtString
+	}{
+		{
+			name: "Returns ResponseMessageName representing 'List' ProtoMessage",
+			fields: fields{
+				Name:       "book", // TODO: revisit Name and ModelName and Noun
+				ModelName:  "book",
+				Type:       "",            // TODO: revisit Type
+				Attributes: []Attribute{}, // ignored
+				Verb:       "list",
+				Noun:       "book",
+			},
+			want: "ListBooksResponse",
+		},
+		{
+			name: "Returns ResponseMessageName representing 'Get' ProtoMessage",
+			fields: fields{
+				Name:       "book", // TODO: revisit Name and ModelName and Noun
+				ModelName:  "book",
+				Type:       "",            // TODO: revisit Type
+				Attributes: []Attribute{}, // ignored
+				Verb:       "get",
+				Noun:       "book",
+			},
+			want: "Book",
+		},
+		{
+			name: "Returns ResponseMessageName representing 'Create' ProtoMessage",
+			fields: fields{
+				Name:       "book", // TODO: revisit Name and ModelName and Noun
+				ModelName:  "book",
+				Type:       "",            // TODO: revisit Type
+				Attributes: []Attribute{}, // ignored
+				Verb:       "create",
+				Noun:       "book",
+			},
+			want: "Book",
+		},
+		{
+			name: "Returns ResponseMessageName representing 'Update' ProtoMessage",
+			fields: fields{
+				Name:       "book", // TODO: revisit Name and ModelName and Noun
+				ModelName:  "book",
+				Type:       "",            // TODO: revisit Type
+				Attributes: []Attribute{}, // ignored
+				Verb:       "update",
+				Noun:       "book",
+			},
+			want: "Book",
+		},
+		{
+			name: "Returns ResponseMessageName representing 'Rename' ProtoMessage",
+			fields: fields{
+				Name:       "book", // TODO: revisit Name and ModelName and Noun
+				ModelName:  "book",
+				Type:       "",            // TODO: revisit Type
+				Attributes: []Attribute{}, // ignored
+				Verb:       "rename",
+				Noun:       "book",
+			},
+			want: "RenameBookResponse",
+		},
+		{
+			name: "Returns ResponseMessageName representing 'Delete' ProtoMessage",
+			fields: fields{
+				Name:       "book", // TODO: revisit Name and ModelName and Noun
+				ModelName:  "book",
+				Type:       "",            // TODO: revisit Type
+				Attributes: []Attribute{}, // ignored
+				Verb:       "delete",
+				Noun:       "book",
+			},
+			want: "google.protobuf.Empty",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			Convey("RequestMessageName", t, func() {
+				pm := ProtoMessage{
+					Name:       tt.fields.Name,
+					ModelName:  tt.fields.ModelName,
+					Type:       tt.fields.Type,
+					Attributes: tt.fields.Attributes,
+					Verb:       tt.fields.Verb,
+					Noun:       tt.fields.Noun,
+				}
+				So(pm.ResponseMessageName(), ShouldResemble, tt.want)
 			})
 		})
 	}
